@@ -1,0 +1,15 @@
+@import "./tailwind.css";
+
+html,
+body {
+  @apply bg-white;
+  @apply w-full h-full;
+}
+
+#app {
+  @apply w-full h-full;
+}
+
+.page {
+  @apply w-full h-full;
+}
