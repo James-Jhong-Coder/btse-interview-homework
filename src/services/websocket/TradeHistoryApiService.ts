@@ -1,7 +1,14 @@
-// src/services/websocket/tradeHistoryApi.ts
+// src/services/websocket/TradeHistoryService.ts
+
 import { Observable } from "rxjs";
-import { getBtseSocket, sendDataToBtse } from "@/services/websocket/BtseSocket";
-import type { TradeHistoryMessage } from "@/services/websocket/types/socket.types.ts";
+import {
+  getTradeHistoryApiSocket,
+  sendTradeHistoryApiData,
+} from "@/services/websocket/HistoryApiSocket";
+import type {
+  TradeHistoryItem,
+  TradeHistoryMessage,
+} from "./types/tradeHistory.types";
 
 interface SubscribeTradeHistoryParams {
   symbol: string;
@@ -12,60 +19,47 @@ export const subscribeTradeHistory = ({
   symbol = "BTCPFC",
 }: SubscribeTradeHistoryParams) => {
   const topic = `tradeHistoryApi:${symbol}`;
-  console.log("topic = ", topic);
 
-  const observable$ = new Observable<TradeHistoryMessage["data"]>(
-    (subscriber) => {
-      const ws = getBtseSocket();
+  // 推 trades 陣列出去（你也可以改成單筆或自己 map）
+  const observable$ = new Observable<TradeHistoryItem>((subscriber) => {
+    const ws = getTradeHistoryApiSocket();
 
-      const onMessageHandler = (event: MessageEvent) => {
-        try {
-          const msg = JSON.parse(event.data) as TradeHistoryMessage | any;
+    const onMessageHandler = (event: MessageEvent) => {
+      try {
+        const msg = JSON.parse(event.data) as any;
 
-          // 有些文件 sample 只寫 "topic": "tradeHistoryApi"
-          // 所以這裡稍微保守一點：只要是 tradeHistoryApi 開頭，再比對 symbol
-          const isTradeHistoryTopic =
-            typeof msg.topic === "string" &&
-            msg.topic.startsWith("tradeHistoryApi") &&
-            Array.isArray(msg.data);
+        // 只處理 tradeHistoryApi 的消息
+        if (msg.topic !== "tradeHistoryApi" || !Array.isArray(msg.data)) return;
 
-          if (!isTradeHistoryTopic) return;
+        const data = msg.data as TradeHistoryMessage["data"];
+        const first = data[0];
 
-          // 再用 symbol 過濾，避免其他市場混進來
-          const data = msg.data as TradeHistoryMessage["data"];
-          const first = data[0];
-          console.log("TradeHistoryMessage = ", event.data);
+        // 確認 symbol 一致，避免混到其他商品
+        if (!first || first.symbol !== symbol) return;
 
-          if (first && first.symbol === symbol) {
-            subscriber.next(data);
-          }
-        } catch (err) {
-          subscriber.error(err);
-        }
-      };
+        subscriber.next(first);
+      } catch (err) {
+        subscriber.error(err);
+      }
+    };
 
-      ws.addEventListener("message", onMessageHandler);
+    ws.addEventListener("message", onMessageHandler);
 
-      // teardown：unsubscribe + 移除 listener
-      return () => {
-        sendDataToBtse({
-          op: "unsubscribe",
-          args: [topic],
-        });
+    // teardown：退訂 + 移除 listener
+    return () => {
+      sendTradeHistoryApiData({
+        op: "unsubscribe",
+        args: [topic],
+      });
 
-        ws.removeEventListener("message", onMessageHandler);
+      ws.removeEventListener("message", onMessageHandler);
 
-        console.log(`[TradeHistoryService] unsubscribed from ${topic}`);
-      };
-    }
-  );
+      console.log(`[TradeHistoryService] unsubscribed from ${topic}`);
+    };
+  });
 
   // 送出訂閱指令
-  sendDataToBtse({
-    op: "subscribe",
-    args: [topic],
-  });
-  console.log({
+  sendTradeHistoryApiData({
     op: "subscribe",
     args: [topic],
   });
@@ -75,11 +69,11 @@ export const subscribeTradeHistory = ({
   return observable$;
 };
 
-// 解除訂閱 tradeHistoryApi（如果你想手動退訂也可以用這個）
+// 如果你要額外手動退訂（不用 Observable 的 teardown 時）
 export const unsubscribeTradeHistory = (symbol = "BTCPFC") => {
   const topic = `tradeHistoryApi:${symbol}`;
 
-  sendDataToBtse({
+  sendTradeHistoryApiData({
     op: "unsubscribe",
     args: [topic],
   });

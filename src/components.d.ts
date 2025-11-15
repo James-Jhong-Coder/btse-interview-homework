@@ -14,5 +14,6 @@ declare module 'vue' {
     BuyOrders: typeof import('./components/BuyOrders.vue')['default']
     OrderBook: typeof import('./components/OrderBook.vue')['default']
     SellOrders: typeof import('./components/SellOrders.vue')['default']
+    SvgIcon: typeof import('./components/common/SvgIcon.vue')['default']
   }
 }
