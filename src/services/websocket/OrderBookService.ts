@@ -1,8 +1,11 @@
-import { getBtseSocket, sendDataToBtse } from "@/services/websocket/BtseSocket";
 import { Observable } from "rxjs";
-import type { OrderBookMessage } from "./types/socket.types";
+import {
+  getOrderBookSocket,
+  sendOrderBookData,
+} from "@/services/websocket/OrderBookSocket";
+import type { OrderBookMessage } from "./types/orderBook.types";
 
-interface subscribeOrderBookParams {
+interface SubscribeOrderBookParams {
   symbol: string;
   grouping: number;
 }
@@ -11,10 +14,11 @@ interface subscribeOrderBookParams {
 export const subscribeOrderBook = ({
   symbol = "BTCPFC",
   grouping = 0,
-}: subscribeOrderBookParams) => {
+}: SubscribeOrderBookParams) => {
   const topic = `update:${symbol}_${grouping}`;
+
   const observable$ = new Observable<OrderBookMessage["data"]>((subscriber) => {
-    const ws = getBtseSocket();
+    const ws = getOrderBookSocket();
 
     const onMessageHandler = (event: MessageEvent) => {
       try {
@@ -30,29 +34,37 @@ export const subscribeOrderBook = ({
     };
 
     ws.addEventListener("message", onMessageHandler);
+
+    // teardown：退訂 + 移除 listener
     return () => {
-      sendDataToBtse({
+      sendOrderBookData({
         op: "unsubscribe",
         args: [topic],
       });
-      window.removeEventListener("message", onMessageHandler);
+
+      ws.removeEventListener("message", onMessageHandler);
+
       console.log(`[OrderBookService] unsubscribed from ${topic}`);
     };
   });
-  sendDataToBtse({
+
+  // 送出訂閱指令
+  sendOrderBookData({
     op: "subscribe",
     args: [topic],
   });
 
   console.log("[OrderBookService] subscribe", symbol);
+
   return observable$;
 };
 
-// 解除訂閱 order book
 export const unsubscribeOrderBook = (symbol = "BTCPFC_0") => {
-  sendDataToBtse({
+  const topic = `update:${symbol}`;
+
+  sendOrderBookData({
     op: "unsubscribe",
-    args: [`update:${symbol}`],
+    args: [topic],
   });
 
   console.log("[OrderBookService] unsubscribe", symbol);
