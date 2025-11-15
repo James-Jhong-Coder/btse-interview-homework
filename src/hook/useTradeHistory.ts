@@ -1,4 +1,4 @@
-import { PriceDirection } from "@/common/const";
+import { PRICE_DIRECTION } from "@/common/const";
 import { type TradeHistoryItem } from "@/services/websocket/types/tradeHistory.types";
 import { useTradeHistoryStore } from "@/stores/tradeHistory";
 import { isEmpty } from "lodash";
@@ -20,11 +20,11 @@ const getLastPriceDirection = ({
     isEmpty(lastTradeHistory) ||
     newestTradeHistory?.price === lastTradeHistory?.price
   ) {
-    return PriceDirection.SAME;
+    return PRICE_DIRECTION.SAME;
   } else if (newestTradeHistory.price > lastTradeHistory.price) {
-    return PriceDirection.UP;
+    return PRICE_DIRECTION.UP;
   } else if (newestTradeHistory.price < lastTradeHistory.price) {
-    return PriceDirection.DOWN;
+    return PRICE_DIRECTION.DOWN;
   }
   return "";
 };

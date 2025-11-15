@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useBigNumber } from "@/hook/useBigNumber";
-import { PriceDirection } from "@/common/const";
+import { PRICE_DIRECTION } from "@/common/const";
 const { formatWithComma } = useBigNumber();
 
 interface Props {
@@ -20,9 +20,9 @@ const computedPriceDirectionStyle = computed(() => {
     return [];
   }
   const styleMap = {
-    [PriceDirection.UP]: ["text-green-400", "bg-green-100"],
-    [PriceDirection.DOWN]: ["text-red-400", "bg-red-100"],
-    [PriceDirection.SAME]: ["text-gray-400", "bg-gray-100"],
+    [PRICE_DIRECTION.UP]: ["text-green-400", "bg-green-100"],
+    [PRICE_DIRECTION.DOWN]: ["text-red-400", "bg-red-100"],
+    [PRICE_DIRECTION.SAME]: ["text-gray-400", "bg-gray-100"],
   };
   return styleMap[props.direction] ?? [];
 });
@@ -31,11 +31,11 @@ const computedPriceDirectionStyle = computed(() => {
   <div class="last-price py-1" :class="[...computedPriceDirectionStyle]">
     <span>{{ computedPrice }}</span>
     <SvgIcon
-      v-if="direction !== PriceDirection.SAME"
+      v-if="direction !== PRICE_DIRECTION.SAME"
       name="icon_arrow_down"
       class="ml-2"
       :class="{
-        'icon-up': direction === PriceDirection.UP,
+        'icon-up': direction === PRICE_DIRECTION.UP,
       }"
     />
   </div>
