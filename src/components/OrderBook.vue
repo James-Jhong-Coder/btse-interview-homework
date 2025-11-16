@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted } from "vue";
 import { subscribeOrderBook } from "@/services/websocket/OrderBookService";
-import { subscribeTradeHistory } from "@/services/websocket/TradeHistoryApiService";
 import { useTradeHistory } from "@/hook/useTradeHistory";
-import { useTradeHistoryStore } from "@/stores/tradeHistory";
 import { useOrderBook } from "@/hook/useOrderBook";
 const { parseOrderBookData } = useOrderBook();
-const tradeHistoryStore = useTradeHistoryStore();
-const { getLastPriceDirection } = useTradeHistory();
-const priceDirection = ref("");
+const { priceDirection, lastTradeHistory } = useTradeHistory();
 const onSubscribeOrderBook = () => {
   const subscribeOrderBook$ = subscribeOrderBook({
     symbol: "BTCPFC",
@@ -18,21 +14,9 @@ const onSubscribeOrderBook = () => {
     parseOrderBookData(data);
   });
 };
-const onSubscribeTradeHistory = () => {
-  const subscribeTradeHistory$ = subscribeTradeHistory({
-    symbol: "BTCPFC",
-  });
-  subscribeTradeHistory$.subscribe((data) => {
-    priceDirection.value = getLastPriceDirection({
-      newestTradeHistory: data,
-    });
-    tradeHistoryStore.updateState({
-      lastTradeHistory: data,
-    });
-  });
-};
-onSubscribeOrderBook();
-onSubscribeTradeHistory();
+onMounted(() => {
+  onSubscribeOrderBook();
+});
 </script>
 
 <template>
@@ -45,7 +29,7 @@ onSubscribeTradeHistory();
     <LastPrice
       class="my-2.5"
       :direction="priceDirection"
-      :price="tradeHistoryStore.lastTradeHistory?.price"
+      :price="lastTradeHistory?.price"
     />
     <BuyOrders />
   </div>

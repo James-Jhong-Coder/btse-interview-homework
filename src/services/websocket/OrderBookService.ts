@@ -3,47 +3,44 @@ import {
   getOrderBookSocket,
   sendOrderBookData,
 } from "@/services/websocket/OrderBookSocket";
-import type { OrderBookMessage } from "./types/orderBook.types";
+import type { OrderBookData, OrderBookMessage } from "./types/orderBook.types";
 
 interface SubscribeOrderBookParams {
-  symbol: string;
-  grouping: number;
+  symbol?: string;
+  grouping?: number;
 }
 
 // 訂閱 order book
 export const subscribeOrderBook = ({
   symbol = "BTCPFC",
   grouping = 0,
-}: SubscribeOrderBookParams) => {
+}: SubscribeOrderBookParams = {}) => {
   const topic = `update:${symbol}_${grouping}`;
 
-  const observable$ = new Observable<OrderBookMessage["data"]>((subscriber) => {
-    const ws = getOrderBookSocket();
+  const observable$ = new Observable<OrderBookData>((subscriber) => {
+    const orderBookWebSocket = getOrderBookSocket();
 
     const onMessageHandler = (event: MessageEvent) => {
       try {
-        const msg = JSON.parse(event.data);
+        const orderBookMessage = JSON.parse(event.data) as OrderBookMessage;
 
-        // 過濾指定 topic
-        if (msg.topic === topic) {
-          subscriber.next(msg.data); // 推出 snapshot 或 delta 資料
+        if (orderBookMessage.topic === topic) {
+          subscriber.next(orderBookMessage.data); // 推出 snapshot 或 delta 資料
         }
       } catch (err) {
         subscriber.error(err);
       }
     };
 
-    ws.addEventListener("message", onMessageHandler);
+    orderBookWebSocket.addEventListener("message", onMessageHandler);
 
-    // teardown：退訂 + 移除 listener
+    // 退訂，移除
     return () => {
       sendOrderBookData({
         op: "unsubscribe",
         args: [topic],
       });
-
-      ws.removeEventListener("message", onMessageHandler);
-
+      orderBookWebSocket.removeEventListener("message", onMessageHandler);
       console.log(`[OrderBookService] unsubscribed from ${topic}`);
     };
   });
@@ -54,18 +51,21 @@ export const subscribeOrderBook = ({
     args: [topic],
   });
 
-  console.log("[OrderBookService] subscribe", symbol);
+  console.log("[OrderBookService] subscribe", topic);
 
   return observable$;
 };
 
-export const unsubscribeOrderBook = (symbol = "BTCPFC_0") => {
-  const topic = `update:${symbol}`;
+export const unsubscribeOrderBook = ({
+  symbol = "BTCPFC",
+  grouping = 0,
+}: SubscribeOrderBookParams = {}) => {
+  const topic = `update:${symbol}_${grouping}`;
 
   sendOrderBookData({
     op: "unsubscribe",
     args: [topic],
   });
 
-  console.log("[OrderBookService] unsubscribe", symbol);
+  console.log("[OrderBookService] unsubscribe", topic);
 };

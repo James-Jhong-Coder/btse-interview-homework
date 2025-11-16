@@ -1,6 +1,6 @@
 export const PRICE_DIRECTION = {
-  UP: "UP",
-  DOWN: "DOWN",
+  INCREASE: "INCREASE",
+  DECREASE: "DECREASE",
   SAME: "SAME",
 };
 

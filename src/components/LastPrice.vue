@@ -20,8 +20,8 @@ const computedPriceDirectionStyle = computed(() => {
     return [];
   }
   const styleMap = {
-    [PRICE_DIRECTION.UP]: ["text-green-400", "bg-green-100"],
-    [PRICE_DIRECTION.DOWN]: ["text-red-400", "bg-red-100"],
+    [PRICE_DIRECTION.INCREASE]: ["text-green-400", "bg-green-100"],
+    [PRICE_DIRECTION.DECREASE]: ["text-red-400", "bg-red-100"],
     [PRICE_DIRECTION.SAME]: ["text-gray-400", "bg-gray-100"],
   };
   return styleMap[props.direction] ?? [];
@@ -35,7 +35,7 @@ const computedPriceDirectionStyle = computed(() => {
       name="icon_arrow_down"
       class="ml-2"
       :class="{
-        'icon-up': direction === PRICE_DIRECTION.UP,
+        'icon-up': direction === PRICE_DIRECTION.INCREASE,
       }"
     />
   </div>

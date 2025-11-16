@@ -11,27 +11,40 @@ import type {
 } from "./types/tradeHistory.types";
 
 interface SubscribeTradeHistoryParams {
-  symbol: string;
+  symbol?: string;
 }
 
 // 訂閱 tradeHistoryApi（成交資訊）
 export const subscribeTradeHistory = ({
   symbol = "BTCPFC",
-}: SubscribeTradeHistoryParams) => {
+}: SubscribeTradeHistoryParams = {}) => {
   const topic = `tradeHistoryApi:${symbol}`;
 
-  // 推 trades 陣列出去（你也可以改成單筆或自己 map）
   const observable$ = new Observable<TradeHistoryItem>((subscriber) => {
-    const ws = getTradeHistoryApiSocket();
-
+    const webSocket = getTradeHistoryApiSocket();
+    let isSubscribed = false; // 要訂閱 Acknowledged 才可以收資料
     const onMessageHandler = (event: MessageEvent) => {
       try {
         const msg = JSON.parse(event.data) as any;
 
+        // 判斷是否拿到訂閱成功的 ack
+        if (
+          msg.event === "subscribe" &&
+          Array.isArray(msg.channel) &&
+          msg.channel.includes(topic)
+        ) {
+          console.log(`[TradeHistoryService] subscribed ACK: ${topic}`);
+          isSubscribed = true;
+          return;
+        }
+
+        // 如果訂閱沒有成功，就不往下執行
+        if (!isSubscribed) return;
         // 只處理 tradeHistoryApi 的消息
         if (msg.topic !== "tradeHistoryApi" || !Array.isArray(msg.data)) return;
 
         const data = msg.data as TradeHistoryMessage["data"];
+        // 因為只拿第一筆作顯示
         const first = data[0];
 
         // 確認 symbol 一致，避免混到其他商品
@@ -43,7 +56,12 @@ export const subscribeTradeHistory = ({
       }
     };
 
-    ws.addEventListener("message", onMessageHandler);
+    webSocket.addEventListener("message", onMessageHandler);
+    // 送出訂閱指令
+    sendTradeHistoryApiData({
+      op: "subscribe",
+      args: [topic],
+    });
 
     // teardown：退訂 + 移除 listener
     return () => {
@@ -52,20 +70,13 @@ export const subscribeTradeHistory = ({
         args: [topic],
       });
 
-      ws.removeEventListener("message", onMessageHandler);
+      webSocket.removeEventListener("message", onMessageHandler);
 
       console.log(`[TradeHistoryService] unsubscribed from ${topic}`);
     };
   });
 
-  // 送出訂閱指令
-  sendTradeHistoryApiData({
-    op: "subscribe",
-    args: [topic],
-  });
-
-  console.log("[TradeHistoryService] subscribe", symbol);
-
+  console.log("[TradeHistoryService] subscribe", topic);
   return observable$;
 };
 
