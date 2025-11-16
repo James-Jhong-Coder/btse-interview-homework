@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { subscribeOrderBook } from "@/services/websocket/OrderBookService";
 import { subscribeTradeHistory } from "@/services/websocket/TradeHistoryApiService";
-import { ref } from "vue";
 import { useTradeHistory } from "@/hook/useTradeHistory";
 import { useTradeHistoryStore } from "@/stores/tradeHistory";
+import { useOrderBook } from "@/hook/useOrderBook";
+const { parseOrderBookData } = useOrderBook();
 const tradeHistoryStore = useTradeHistoryStore();
 const { getLastPriceDirection } = useTradeHistory();
 const priceDirection = ref("");
@@ -13,7 +15,7 @@ const onSubscribeOrderBook = () => {
     grouping: 0,
   });
   subscribeOrderBook$.subscribe((data) => {
-    console.log("subscribeOrderBook", data);
+    parseOrderBookData(data);
   });
 };
 const onSubscribeTradeHistory = () => {
@@ -34,16 +36,18 @@ onSubscribeTradeHistory();
 </script>
 
 <template>
-  <div class="order-book-box">
+  <div class="order-book-box pb-2">
     <div class="title-box px-3 py-2">
       <span>Order Book</span>
     </div>
+    <div class="divider mb-2"></div>
     <SellOrders />
     <LastPrice
+      class="my-2.5"
       :direction="priceDirection"
       :price="tradeHistoryStore.lastTradeHistory?.price"
     />
-    <BuyOrders class="mt-4" />
+    <BuyOrders />
   </div>
 </template>
 
@@ -55,8 +59,12 @@ onSubscribeTradeHistory();
   @apply bg-navy-600;
 }
 
+.order-book-box .divider {
+  @apply bg-navy-400 h-px shrink-0;
+}
+
 .title-box {
-  @apply flex items-center;
-  @apply text-gray-500 text-base;
+  @apply flex items-center leading-none;
+  @apply text-gray-500 text-base font-medium;
 }
 </style>

@@ -2,6 +2,7 @@ const HISTORY_API_WS_URL = "wss://ws.btse.com/ws/futures";
 
 let tradeHistoryApiWebSocket: WebSocket | null = null;
 
+// 記得要收到 success 才可以收
 export const getTradeHistoryApiSocket = () => {
   if (
     !tradeHistoryApiWebSocket ||

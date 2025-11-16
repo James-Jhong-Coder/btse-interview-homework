@@ -4,4 +4,4 @@ export const PRICE_DIRECTION = {
   SAME: "SAME",
 };
 
-export const VISIBLE_MAX_LEVEL = 8; // 可以顯示的最多數量
+export const VISIBLE_MAX_QUOTE = 8; // 可以顯示的最多數量

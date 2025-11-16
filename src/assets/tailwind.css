@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 @theme {
+  --color-navy-400: #1f2634;
   --color-navy-600: #131b29;
 
   --color-gray-100: rgba(134, 152, 170, 0.12);
   --color-gray-300: #8698aa;
-  --color-gray-400: #f0f4f8;
   --color-gray-500: #f0f4f8;
 
   --color-green-100: rgba(16, 186, 104, 0.12);
