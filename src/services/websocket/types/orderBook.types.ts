@@ -1,5 +1,5 @@
-export type Bid = [number, number];
-export type Ask = [number, number];
+export type Bid = [string, string];
+export type Ask = [string, string];
 
 export interface OrderBookData {
   bids: Bid[];
