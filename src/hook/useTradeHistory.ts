@@ -22,7 +22,7 @@ export const useTradeHistory = () => {
     }
 
     if (newestTradeHistory.price > last.price) {
-      return PRICE_DIRECTION.INCREASE; // 確認 enum 有這個 key
+      return PRICE_DIRECTION.INCREASE;
     }
 
     return PRICE_DIRECTION.DECREASE;
