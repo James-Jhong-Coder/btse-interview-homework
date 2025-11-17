@@ -16,7 +16,10 @@ const orderBookStore = useOrderBookStore();
     <div
       class="sell-row px-3"
       v-for="(item, index) in orderBookStore.sortedAskQuotes"
-      :key="`${index}`"
+      :key="`${index}-${item.price}`"
+      :class="{
+        'sell-row-flash': item.rowHighlight === 'new',
+      }"
     >
       <span class="sell-row-cell justify-self-start text-red-400">{{
         formatWithComma(item.price)
@@ -50,6 +53,9 @@ const orderBookStore = useOrderBookStore();
   grid-template-rows: min-content;
   @apply hover:bg-navy-700;
 }
+.sell-row.sell-row-flash {
+  animation: rowFlashAnimation 2s ease-out;
+}
 .sell-row-cell {
   @apply py-1;
   @apply relative;
@@ -58,5 +64,13 @@ const orderBookStore = useOrderBookStore();
 .percent-bar {
   @apply absolute top-0.5 bottom-0.5 right-0;
   @apply bg-red-100;
+}
+@keyframes rowFlashAnimation {
+  0% {
+    background-color: rgba(255, 91, 90, 0.5);
+  }
+  100% {
+    background-color: transparent;
+  }
 }
 </style>

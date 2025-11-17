@@ -11,7 +11,10 @@ const orderBookStore = useOrderBookStore();
     <div
       class="buy-row px-3"
       v-for="(item, index) in orderBookStore.sortedBidQuotes"
-      :key="`${index}`"
+      :key="`${index}-${item.price}`"
+      :class="{
+        'buy-row-flash': item.rowHighlight === 'new',
+      }"
     >
       <span class="buy-row-cell justify-self-start text-green-400">{{
         formatWithComma(item.price)
@@ -44,8 +47,20 @@ const orderBookStore = useOrderBookStore();
   @apply relative;
   @apply flex items-center justify-end;
 }
+.buy-row.buy-row-flash {
+  animation: rowFlashAnimation 2s ease-out;
+}
 .percent-bar {
   @apply absolute top-0.5 bottom-0.5 right-0;
   @apply bg-green-100;
+}
+
+@keyframes rowFlashAnimation {
+  0% {
+    background-color: rgba(0, 177, 93, 0.5);
+  }
+  100% {
+    background-color: transparent;
+  }
 }
 </style>
