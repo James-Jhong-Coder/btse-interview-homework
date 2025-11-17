@@ -54,6 +54,7 @@ const orderBookStore = useOrderBookStore();
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: min-content;
   @apply text-gray-300 text-xs;
+  gap: 0 0.5rem;
 }
 .sell-row {
   @apply grid leading-none;
@@ -61,6 +62,7 @@ const orderBookStore = useOrderBookStore();
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: min-content;
   @apply hover:bg-navy-700;
+  gap: 0 0.5rem;
 }
 .sell-row.sell-row-flash {
   animation: rowFlashAnimation 0.2s ease-out;

@@ -49,6 +49,7 @@ const orderBookStore = useOrderBookStore();
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: min-content;
   @apply hover:bg-navy-700;
+  gap: 0 0.5rem;
 }
 .buy-row-cell {
   @apply py-1;
