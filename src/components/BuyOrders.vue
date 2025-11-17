@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { useOrderBookStore } from "@/stores/orderBook";
+import { useBigNumber } from "@/hook/useBigNumber";
+const { formatWithComma } = useBigNumber();
 const orderBookStore = useOrderBookStore();
 </script>
 
@@ -14,9 +16,9 @@ const orderBookStore = useOrderBookStore();
       v-for="(item, index) in orderBookStore.sortedBidQuotes"
       :key="`${index}`"
     >
-      <span class="text-green-400">{{ item.price }}</span>
-      <span class="text-right">{{ item.size }}</span>
-      <span class="text-right">{{ item.totalSize }}</span>
+      <span class="text-green-400">{{ formatWithComma(item.price) }}</span>
+      <span class="text-right">{{ formatWithComma(item.size) }}</span>
+      <span class="text-right">{{ formatWithComma(item.totalSize) }}</span>
     </div>
   </div>
 </template>
