@@ -22,7 +22,7 @@ const computedPriceDirectionStyle = computed(() => {
   const styleMap = {
     [PRICE_DIRECTION.INCREASE]: ["text-green-400", "bg-green-100"],
     [PRICE_DIRECTION.DECREASE]: ["text-red-400", "bg-red-100"],
-    [PRICE_DIRECTION.SAME]: ["text-gray-400", "bg-gray-100"],
+    [PRICE_DIRECTION.SAME]: ["text-gray-500", "bg-gray-100"],
   };
   return styleMap[props.direction] ?? [];
 });
