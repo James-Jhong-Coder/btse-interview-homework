@@ -55,17 +55,3 @@ export const subscribeOrderBook = ({
 
   return observable$;
 };
-
-export const unsubscribeOrderBook = ({
-  symbol = "BTCPFC",
-  grouping = 0,
-}: SubscribeOrderBookParams = {}) => {
-  const topic = `update:${symbol}_${grouping}`;
-
-  sendOrderBookData({
-    op: "unsubscribe",
-    args: [topic],
-  });
-
-  console.log("[OrderBookService] unsubscribe", topic);
-};
