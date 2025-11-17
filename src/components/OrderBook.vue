@@ -1,22 +1,8 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
-import { subscribeOrderBook } from "@/services/websocket/OrderBookService";
 import { useTradeHistory } from "@/hook/useTradeHistory";
 import { useOrderBook } from "@/hook/useOrderBook";
-const { parseOrderBookData } = useOrderBook();
-const { priceDirection, lastTradeHistory } = useTradeHistory();
-const onSubscribeOrderBook = () => {
-  const subscribeOrderBook$ = subscribeOrderBook({
-    symbol: "BTCPFC",
-    grouping: 0,
-  });
-  subscribeOrderBook$.subscribe((data) => {
-    parseOrderBookData(data);
-  });
-};
-onMounted(() => {
-  onSubscribeOrderBook();
-});
+const { priceDirection, lastTradeHistory } = useTradeHistory(); // 訂閱 trade history
+useOrderBook(); // 訂閱 order book
 </script>
 
 <template>
