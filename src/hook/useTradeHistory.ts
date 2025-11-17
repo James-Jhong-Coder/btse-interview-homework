@@ -49,7 +49,8 @@ export const useTradeHistory = () => {
 
   onUnmounted(() => {
     if (subscription) {
-      subscription.unsubscribe();
+      subscription.unsubscribe(); // 解除訂閱
+      tradeHistoryStore.$reset(); // 重置 store
       subscription = null;
     }
   });
