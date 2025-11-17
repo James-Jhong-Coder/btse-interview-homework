@@ -28,7 +28,9 @@ const orderBookStore = useOrderBookStore();
 .buy-row {
   @apply grid leading-none;
   @apply text-gray-500 text-xs;
+  @apply py-1;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: min-content;
+  @apply hover:bg-navy-700;
 }
 </style>
