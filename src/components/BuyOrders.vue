@@ -19,7 +19,16 @@ const orderBookStore = useOrderBookStore();
       <span class="buy-row-cell justify-self-start text-green-400">{{
         formatWithComma(item.price)
       }}</span>
-      <span class="buy-row-cell">{{ formatWithComma(item.size) }}</span>
+      <div class="buy-row-cell">
+        <div
+          class="size-highlight"
+          :class="{
+            'size-highlight--increase': item.sizeHighlight === 'increase',
+            'size-highlight--decrease': item.sizeHighlight === 'decrease',
+          }"
+        ></div>
+        <span>{{ formatWithComma(item.size) }}</span>
+      </div>
       <div class="buy-row-cell">
         <span
           class="percent-bar"
@@ -48,7 +57,7 @@ const orderBookStore = useOrderBookStore();
   @apply flex items-center justify-end;
 }
 .buy-row.buy-row-flash {
-  animation: rowFlashAnimation 2s ease-out;
+  animation: rowFlashAnimation 0.2s ease-out;
 }
 .percent-bar {
   @apply absolute top-0.5 bottom-0.5 right-0;
@@ -58,6 +67,31 @@ const orderBookStore = useOrderBookStore();
 @keyframes rowFlashAnimation {
   0% {
     background-color: rgba(0, 177, 93, 0.5);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+.size-highlight {
+  @apply absolute inset-0;
+}
+.size-highlight.size-highlight--increase {
+  animation: size-highlight-increase-animation 2s ease-out;
+}
+.size-highlight.size-highlight--decrease {
+  animation: size-highlight-decrease-animation 2s ease-out;
+}
+@keyframes size-highlight-increase-animation {
+  0% {
+    background-color: rgba(0, 177, 93, 0.5);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+@keyframes size-highlight-decrease-animation {
+  0% {
+    background-color: rgba(255, 90, 90, 0.12);
   }
   100% {
     background-color: transparent;
