@@ -1,10 +1,8 @@
-// src/services/websocket/TradeHistoryService.ts
-
 import { Observable } from "rxjs";
 import {
   getTradeHistoryApiSocket,
   sendTradeHistoryApiData,
-} from "@/services/websocket/HistoryApiSocket";
+} from "@/services/websocket/TradeHistoryApiSocket";
 import type {
   TradeHistoryItem,
   TradeHistoryMessage,
@@ -55,8 +53,12 @@ export const subscribeTradeHistory = ({
         subscriber.error(err);
       }
     };
+    const onCloseHandler = () => {
+      subscriber.complete(); // 或 subscriber.error(new Error("WS closed"))
+    };
 
     webSocket.addEventListener("message", onMessageHandler);
+    webSocket.addEventListener("close", onCloseHandler);
     // 送出訂閱指令
     sendTradeHistoryApiData({
       op: "subscribe",
@@ -69,9 +71,8 @@ export const subscribeTradeHistory = ({
         op: "unsubscribe",
         args: [topic],
       });
-
       webSocket.removeEventListener("message", onMessageHandler);
-
+      webSocket.removeEventListener("close", onCloseHandler);
       console.log(`[TradeHistoryService] unsubscribed from ${topic}`);
     };
   });
