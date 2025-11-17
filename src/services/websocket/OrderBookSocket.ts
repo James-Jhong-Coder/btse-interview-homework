@@ -11,7 +11,6 @@ export const getOrderBookSocket = (): WebSocket => {
     orderBookWebSocket.readyState === WebSocket.CLOSING
   ) {
     orderBookWebSocket = new WebSocket(ORDER_BOOK_WS_URL);
-    orderBookWebSocket.removeEventListener
     orderBookWebSocket.addEventListener("open", () => {
       console.log("[BTSE-OrderBook] WebSocket connected");
     });
