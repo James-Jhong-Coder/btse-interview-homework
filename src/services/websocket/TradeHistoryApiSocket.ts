@@ -6,7 +6,8 @@ let tradeHistoryApiWebSocket: WebSocket | null = null;
 export const getTradeHistoryApiSocket = () => {
   if (
     !tradeHistoryApiWebSocket ||
-    tradeHistoryApiWebSocket.readyState === WebSocket.CLOSED
+    tradeHistoryApiWebSocket.readyState === WebSocket.CLOSED ||
+    tradeHistoryApiWebSocket.readyState === WebSocket.CLOSING
   ) {
     tradeHistoryApiWebSocket = new WebSocket(HISTORY_API_WS_URL);
 
