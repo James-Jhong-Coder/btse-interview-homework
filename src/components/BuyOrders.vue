@@ -7,7 +7,6 @@ const orderBookStore = useOrderBookStore();
 
 <template>
   <div class="flex flex-col">
-    <!-- bid 是賣出 -->
     <div
       class="buy-row px-3"
       v-for="(item, index) in orderBookStore.sortedBidQuotes"
@@ -62,6 +61,7 @@ const orderBookStore = useOrderBookStore();
 .percent-bar {
   @apply absolute top-0.5 bottom-0.5 right-0;
   @apply bg-green-100;
+  z-index: 0;
 }
 
 @keyframes rowFlashAnimation {

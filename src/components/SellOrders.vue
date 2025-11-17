@@ -73,6 +73,7 @@ const orderBookStore = useOrderBookStore();
 .percent-bar {
   @apply absolute top-0.5 bottom-0.5 right-0;
   @apply bg-red-100;
+  z-index: 0;
 }
 @keyframes rowFlashAnimation {
   0% {
