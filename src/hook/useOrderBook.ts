@@ -15,11 +15,28 @@ let prevBidsMap = new Map<number, number>();
 let prevAsksMap = new Map<number, number>();
 let lastSeqNum: number | null = null;
 let initialized = false;
+let orderBookSubscription: Subscription | null = null;
 
 export const useOrderBook = () => {
-  return {
-    parseOrderBookData,
-  };
+  onMounted(() => {
+    if (orderBookSubscription) {
+      return;
+    }
+    const subscribeOrderBook$ = subscribeOrderBook({
+      symbol: "BTCPFC",
+      grouping: 0,
+    });
+    orderBookSubscription = subscribeOrderBook$.subscribe((data) => {
+      parseOrderBookData(data);
+    });
+  });
+
+  onUnmounted(() => {
+    if (orderBookSubscription) {
+      orderBookSubscription.unsubscribe();
+      orderBookSubscription = null;
+    }
+  });
 };
 
 const syncPrevMaps = () => {
