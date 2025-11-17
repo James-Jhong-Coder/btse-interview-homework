@@ -1,4 +1,6 @@
 import { VISIBLE_MAX_QUOTE } from "@/common/const";
+import { onMounted, onUnmounted } from "vue";
+import type { Subscription } from "rxjs";
 import type {
   OrderBookData,
   OrderBookQuote,
@@ -7,6 +9,12 @@ import type {
   SizeHightLight,
 } from "@/services/websocket/types/orderBook.types";
 import { useOrderBookStore } from "@/stores/orderBook";
+import {
+  subscribeOrderBook,
+  unsubscribeOrderBook,
+} from "@/services/websocket/OrderBookService";
+import { useBigNumber } from "@/hook/useBigNumber.ts";
+const { sumArray } = useBigNumber();
 
 let bidsMap = new Map<number, number>();
 let asksMap = new Map<number, number>();
@@ -39,6 +47,7 @@ export const useOrderBook = () => {
   });
 };
 
+// 將 delta 的資料更新回 snapshot 的結果再同步到 prevMap
 const syncPrevMaps = () => {
   prevBidsMap.clear();
   prevAsksMap.clear();
@@ -66,7 +75,7 @@ const formatSortedQuotes = (side: OrderSide) => {
   const accumulativeTotalSize =
     entries.reduce((result, item) => {
       const size = item[1];
-      result += size;
+      result = sumArray([result, size]);
       return result;
     }, 0) || 1;
   // 目前 size 加總
@@ -74,7 +83,7 @@ const formatSortedQuotes = (side: OrderSide) => {
   visibleQuotes.forEach(([price, size]) => {
     let rowHighlight: RowHighlight = "none";
     let sizeHighlight: SizeHightLight = "none";
-    currentAccumulativeSize += size;
+    currentAccumulativeSize = sumArray([currentAccumulativeSize, size]);
     const prevSize = prevMap.get(price);
     if (prevSize === undefined) {
       rowHighlight = "new";
@@ -122,12 +131,16 @@ const handleDelta = (delta: OrderBookData) => {
   const orderBookStore = useOrderBookStore();
   if (!initialized) return;
   if (delta.prevSeqNum !== lastSeqNum) {
+    unsubscribeOrderBook({
+      symbol: "BTCPFC",
+      grouping: 0,
+    });
     // 待實作 這邊收到的 seqNum 不一樣要重新訂閱
     return;
   }
   delta.bids.forEach(([price, size]) => {
     // 當 size 為 0 要刪除
-    if (size === 0) {
+    if (Number(size) === 0) {
       bidsMap.delete(price);
     } else {
       // 其餘就依靠 map 自動新增或更新既有的 map
@@ -137,7 +150,7 @@ const handleDelta = (delta: OrderBookData) => {
 
   delta.asks.forEach(([price, size]) => {
     // 當 size 為 0 要刪除
-    if (size === 0) {
+    if (Number(size) === 0) {
       asksMap.delete(price);
     } else {
       // 其餘就依靠 map 自動新增或更新既有的 map
@@ -145,7 +158,6 @@ const handleDelta = (delta: OrderBookData) => {
     }
   });
   lastSeqNum = delta.seqNum;
-
   const sortedBidQuotes = formatSortedQuotes("buy");
   const sortedAskQuotes = formatSortedQuotes("sell");
   orderBookStore.updateState({
@@ -164,5 +176,4 @@ const parseOrderBookData = (orderBookData: OrderBookData) => {
   } else if (orderBookData.type === "delta") {
     handleDelta(orderBookData);
   }
-  // console.log("parseOrderBookData = ", orderBookData);
 };

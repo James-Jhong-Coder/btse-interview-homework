@@ -15,15 +15,22 @@ const orderBookStore = useOrderBookStore();
     <!-- ask 是賣出 -->
     <div
       class="sell-row px-3"
-      :class="{
-        'mt-1': index > 0,
-      }"
       v-for="(item, index) in orderBookStore.sortedAskQuotes"
       :key="`${index}`"
     >
-      <span class="text-red-400">{{ formatWithComma(item.price) }}</span>
-      <span class="text-right">{{ formatWithComma(item.size) }}</span>
-      <span class="text-right">{{ formatWithComma(item.totalSize) }}</span>
+      <span class="sell-row-cell justify-self-start text-red-400">{{
+        formatWithComma(item.price)
+      }}</span>
+      <span class="sell-row-cell">{{ formatWithComma(item.size) }}</span>
+      <div class="sell-row-cell">
+        <span
+          class="percent-bar"
+          :style="{
+            width: item.totalPercent * 100 + '%',
+          }"
+        ></span>
+        <span>{{ formatWithComma(item.totalSize) }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -39,9 +46,17 @@ const orderBookStore = useOrderBookStore();
 .sell-row {
   @apply grid leading-none;
   @apply text-gray-500 text-xs;
-  @apply py-1;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: min-content;
   @apply hover:bg-navy-700;
+}
+.sell-row-cell {
+  @apply py-1;
+  @apply relative;
+  @apply flex items-center justify-end;
+}
+.percent-bar {
+  @apply absolute top-0.5 bottom-0.5 right-0;
+  @apply bg-red-100;
 }
 </style>
