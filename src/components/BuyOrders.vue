@@ -57,7 +57,7 @@ const orderBookStore = useOrderBookStore();
   @apply flex items-center justify-end;
 }
 .buy-row.buy-row-flash {
-  animation: rowFlashAnimation 0.2s ease-out;
+  animation: row-flash-animation 0.2s ease-out;
 }
 .percent-bar {
   @apply absolute top-0.5 bottom-0.5 right-0;
@@ -65,7 +65,7 @@ const orderBookStore = useOrderBookStore();
   z-index: 0;
 }
 
-@keyframes rowFlashAnimation {
+@keyframes row-flash-animation {
   0% {
     background-color: rgba(0, 177, 93, 0.5);
   }

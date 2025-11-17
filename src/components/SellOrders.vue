@@ -65,7 +65,7 @@ const orderBookStore = useOrderBookStore();
   gap: 0 0.5rem;
 }
 .sell-row.sell-row-flash {
-  animation: rowFlashAnimation 0.2s ease-out;
+  animation: row-flash-animation 0.2s ease-out;
 }
 .sell-row-cell {
   @apply py-1;
@@ -77,7 +77,7 @@ const orderBookStore = useOrderBookStore();
   @apply bg-red-100;
   z-index: 0;
 }
-@keyframes rowFlashAnimation {
+@keyframes row-flash-animation {
   0% {
     background-color: rgba(255, 91, 90, 0.5);
   }
