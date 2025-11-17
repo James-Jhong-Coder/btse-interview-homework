@@ -54,7 +54,7 @@ export const subscribeTradeHistory = ({
       }
     };
     const onCloseHandler = () => {
-      subscriber.complete(); // 或 subscriber.error(new Error("WS closed"))
+      subscriber.complete();
     };
 
     webSocket.addEventListener("message", onMessageHandler);
@@ -79,16 +79,4 @@ export const subscribeTradeHistory = ({
 
   console.log("[TradeHistoryService] subscribe", topic);
   return observable$;
-};
-
-// 如果你要額外手動退訂（不用 Observable 的 teardown 時）
-export const unsubscribeTradeHistory = (symbol = "BTCPFC") => {
-  const topic = `tradeHistoryApi:${symbol}`;
-
-  sendTradeHistoryApiData({
-    op: "unsubscribe",
-    args: [topic],
-  });
-
-  console.log("[TradeHistoryService] unsubscribe", topic);
 };
