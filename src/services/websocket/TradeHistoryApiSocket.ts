@@ -1,11 +1,14 @@
+import { useTradeHistoryStore } from "@/stores/tradeHistory";
 const HISTORY_API_WS_URL = "wss://ws.btse.com/ws/futures";
 
 let tradeHistoryApiWebSocket: WebSocket | null = null;
 
+// 記得要收到 success 才可以收
 export const getTradeHistoryApiSocket = () => {
   if (
     !tradeHistoryApiWebSocket ||
-    tradeHistoryApiWebSocket.readyState === WebSocket.CLOSED
+    tradeHistoryApiWebSocket.readyState === WebSocket.CLOSED ||
+    tradeHistoryApiWebSocket.readyState === WebSocket.CLOSING
   ) {
     tradeHistoryApiWebSocket = new WebSocket(HISTORY_API_WS_URL);
 
@@ -14,6 +17,8 @@ export const getTradeHistoryApiSocket = () => {
     });
 
     tradeHistoryApiWebSocket.addEventListener("close", () => {
+      const tradeHistoryStore = useTradeHistoryStore();
+      tradeHistoryStore.$reset();
       console.log("[BTSE-HistoryApi] WebSocket disconnected");
     });
 

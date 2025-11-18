@@ -1,30 +1,62 @@
-import { PriceDirection } from "@/common/const";
-import { type TradeHistoryItem } from "@/services/websocket/types/tradeHistory.types";
+import { PRICE_DIRECTION } from "@/common/const";
+import type { TradeHistoryItem } from "@/services/websocket/types/tradeHistory.types";
 import { useTradeHistoryStore } from "@/stores/tradeHistory";
-import { isEmpty } from "lodash";
+import { subscribeTradeHistory } from "@/services/websocket/TradeHistoryApiService";
+import { onMounted, onUnmounted, ref } from "vue";
+import type { Subscription } from "rxjs";
+import { storeToRefs } from "pinia";
 
 export const useTradeHistory = () => {
-  return {
-    getLastPriceDirection,
-  };
-};
-
-const getLastPriceDirection = ({
-  newestTradeHistory,
-}: {
-  newestTradeHistory: TradeHistoryItem;
-}) => {
   const tradeHistoryStore = useTradeHistoryStore();
-  const lastTradeHistory = tradeHistoryStore.lastTradeHistory;
-  if (
-    isEmpty(lastTradeHistory) ||
-    newestTradeHistory?.price === lastTradeHistory?.price
-  ) {
-    return PriceDirection.SAME;
-  } else if (newestTradeHistory.price > lastTradeHistory.price) {
-    return PriceDirection.UP;
-  } else if (newestTradeHistory.price < lastTradeHistory.price) {
-    return PriceDirection.DOWN;
-  }
-  return "";
+  const { lastTradeHistory } = storeToRefs(tradeHistoryStore);
+
+  const priceDirection = ref<string>("");
+  let subscription: Subscription | null = null;
+
+  const getLastPriceDirection = (newestTradeHistory: TradeHistoryItem) => {
+    const last = lastTradeHistory.value;
+
+    // 沒有上一筆 or 價格相同
+    if (!last || newestTradeHistory.price === last.price) {
+      return PRICE_DIRECTION.SAME;
+    }
+
+    if (newestTradeHistory.price > last.price) {
+      return PRICE_DIRECTION.INCREASE;
+    }
+
+    return PRICE_DIRECTION.DECREASE;
+  };
+
+  const startSubscribe = () => {
+    if (subscription) return; // 避免重複訂閱
+
+    const tradeHistory$ = subscribeTradeHistory({
+      symbol: "BTCPFC",
+    });
+
+    subscription = tradeHistory$.subscribe((data) => {
+      priceDirection.value = getLastPriceDirection(data);
+      tradeHistoryStore.updateState({
+        lastTradeHistory: data,
+      });
+    });
+  };
+
+  onMounted(() => {
+    startSubscribe();
+  });
+
+  onUnmounted(() => {
+    if (subscription) {
+      subscription.unsubscribe(); // 解除訂閱
+      tradeHistoryStore.$reset(); // 重置 store
+      subscription = null;
+    }
+  });
+
+  return {
+    priceDirection,
+    lastTradeHistory,
+  };
 };

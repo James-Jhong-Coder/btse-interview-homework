@@ -15,3 +15,18 @@ export interface OrderBookMessage {
   topic: string;
   data: OrderBookData;
 }
+
+export type RowHighlight = "none" | "new";
+
+export type SizeHightLight = "none" | "increase" | "decrease";
+
+export type OrderSide = "buy" | "sell";
+export interface OrderBookQuote {
+  side: OrderSide;
+  price: number;
+  size: number;
+  totalSize: number;
+  totalPercent: number;
+  rowHighlight: RowHighlight;
+  sizeHighlight: SizeHightLight;
+}
