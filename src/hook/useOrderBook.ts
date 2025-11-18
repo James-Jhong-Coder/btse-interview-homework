@@ -7,7 +7,7 @@ export const useOrderBook = () => {
   const { sortedBidQuotes, sortedAskQuotes } = storeToRefs(orderBookStore);
 
   onMounted(() => {
-    orderBookStore.onSubscribeOrderBook();
+    orderBookStore.onSubscribeOrderBook({ isReconnect: false });
   });
 
   onUnmounted(() => {

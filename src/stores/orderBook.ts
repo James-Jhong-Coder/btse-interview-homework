@@ -88,6 +88,25 @@ export const useOrderBookStore = defineStore("orderBook", {
       // 5. Buy：高→低 顯示；Sell：計算是低→高，但顯示要反轉成高→低
       return isBuy ? result : result.reverse();
     },
+    checkCrossedOrderBook() {
+      const bestBid = this.sortedBidQuotes[0]?.price;
+      const bestAsk =
+        this.sortedAskQuotes[this.sortedAskQuotes.length - 1]?.price;
+      if (bestBid == null || bestAsk == null) return;
+      // 最佳買點 > 最佳賣點
+      if (bestBid >= bestAsk) {
+        console.error("crossed order book!!");
+        this.forceReconnectOrderBook();
+      }
+    },
+    forceReconnectOrderBook() {
+      const currentConsumers = this.consumerCount;
+      this.orderBookSubscription?.unsubscribe();
+      this.orderBookSubscription = null;
+      this.$reset();
+      this.consumerCount = currentConsumers;
+      this.onSubscribeOrderBook({ isReconnect: true });
+    },
     handleSnapShot(snapshot: OrderBookData) {
       this.bidsMap.clear();
       this.asksMap.clear();
@@ -115,9 +134,7 @@ export const useOrderBookStore = defineStore("orderBook", {
     handleDelta(delta: OrderBookData) {
       if (!this.initialized) return;
       if (delta.prevSeqNum !== this.lastSeqNum) {
-        this.orderBookSubscription?.unsubscribe();
-        this.$reset();
-        this.onSubscribeOrderBook();
+        this.forceReconnectOrderBook();
         return;
       }
       delta.bids.forEach(([price, size]) => {
@@ -164,9 +181,12 @@ export const useOrderBookStore = defineStore("orderBook", {
       } else if (orderBookData.type === "delta") {
         this.handleDelta(orderBookData);
       }
+      this.checkCrossedOrderBook();
     },
-    onSubscribeOrderBook() {
-      this.consumerCount++;
+    onSubscribeOrderBook({ isReconnect }: { isReconnect: boolean }) {
+      if (!isReconnect) {
+        this.consumerCount++;
+      }
       if (this.orderBookSubscription) {
         return;
       }
