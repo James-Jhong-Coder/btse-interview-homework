@@ -86,13 +86,13 @@ const orderBookStore = useOrderBookStore();
   }
 }
 .size-highlight {
-  @apply absolute inset-0;
+  @apply absolute inset-0 top-0.5 bottom-0.5;
 }
 .size-highlight.size-highlight--increase {
-  animation: size-highlight-increase-animation 2s ease-out;
+  animation: size-highlight-increase-animation 0.2s ease-out;
 }
 .size-highlight.size-highlight--decrease {
-  animation: size-highlight-decrease-animation 2s ease-out;
+  animation: size-highlight-decrease-animation 0.2s ease-out;
 }
 @keyframes size-highlight-increase-animation {
   0% {
@@ -104,7 +104,7 @@ const orderBookStore = useOrderBookStore();
 }
 @keyframes size-highlight-decrease-animation {
   0% {
-    background-color: rgba(255, 90, 90, 0.12);
+    background-color: rgba(255, 91, 90, 0.5);
   }
   100% {
     background-color: transparent;

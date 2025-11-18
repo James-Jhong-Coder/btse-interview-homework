@@ -4,6 +4,7 @@ import {
   sendOrderBookData,
 } from "@/services/websocket/OrderBookSocket";
 import type { OrderBookData, OrderBookMessage } from "./types/orderBook.types";
+import { useOrderBookStore } from "@/stores/orderBook";
 
 interface SubscribeOrderBookParams {
   symbol?: string;
@@ -36,6 +37,8 @@ export const subscribeOrderBook = ({
 
     // 退訂，移除
     return () => {
+      const orderBookStore = useOrderBookStore();
+      orderBookStore.$reset();
       sendOrderBookData({
         op: "unsubscribe",
         args: [topic],
