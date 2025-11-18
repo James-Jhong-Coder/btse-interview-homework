@@ -6,7 +6,7 @@ const { formatWithComma } = useBigNumber();
 
 interface Props {
   price: number | null | undefined;
-  direction: string;
+  direction: string | null;
 }
 const props = defineProps<Props>();
 const computedPrice = computed(() => {
