@@ -38,7 +38,9 @@ export const useOrderBook = () => {
 
   onUnmounted(() => {
     if (orderBookSubscription) {
+      const orderBookStore = useOrderBookStore();
       orderBookSubscription.unsubscribe();
+      orderBookStore.$reset();
       orderBookSubscription = null;
     }
   });
