@@ -50,7 +50,6 @@ export const subscribeOrderBook = ({
     op: "subscribe",
     args: [topic],
   });
-
   console.log("[OrderBookService] subscribe", topic);
 
   return observable$;
