@@ -12,6 +12,7 @@
 ```bash
 git clone https://github.com/James-Jhong-Coder/btse-interview-homework.git
 cd btse-interview-homework
+git checkout master
 pnpm install
 ```
 ---
