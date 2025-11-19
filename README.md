@@ -10,7 +10,7 @@
 ## 📦 安裝專案
 
 ```bash
-git clone [<your-repo-url>](https://github.com/James-Jhong-Coder/btse-interview-homework.git)
+git clone https://github.com/James-Jhong-Coder/btse-interview-homework.git
 cd btse-homework
 pnpm install
 ```
