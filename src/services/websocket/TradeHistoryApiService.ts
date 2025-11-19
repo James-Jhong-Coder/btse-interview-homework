@@ -7,6 +7,7 @@ import type {
   TradeHistoryItem,
   TradeHistoryMessage,
 } from "./types/tradeHistory.types";
+let tradeHistoryId = 0;
 
 interface SubscribeTradeHistoryParams {
   symbol?: string;
@@ -19,6 +20,11 @@ export const subscribeTradeHistory = ({
   const topic = `tradeHistoryApi:${symbol}`;
 
   const observable$ = new Observable<TradeHistoryItem>((subscriber) => {
+    tradeHistoryId += 1;
+    console.log(
+      `[tradeHistoryIdService] new subscription #${tradeHistoryId} for ${topic}`
+    );
+
     const webSocket = getTradeHistoryApiSocket();
     let isSubscribed = false; // 要訂閱 Acknowledged 才可以收資料
     const onMessageHandler = (event: MessageEvent) => {

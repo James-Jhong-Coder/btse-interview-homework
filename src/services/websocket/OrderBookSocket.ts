@@ -1,5 +1,6 @@
 const ORDER_BOOK_WS_URL = "wss://ws.btse.com/ws/oss/futures";
 let orderBookWebSocket: WebSocket | null = null;
+let id = 0;
 
 // 取得 order book webSocket
 export const getOrderBookSocket = (): WebSocket => {
@@ -9,6 +10,8 @@ export const getOrderBookSocket = (): WebSocket => {
     orderBookWebSocket.readyState === WebSocket.CLOSED ||
     orderBookWebSocket.readyState === WebSocket.CLOSING
   ) {
+    id += 1;
+    console.log("orderBookWebSocket id", id);
     orderBookWebSocket = new WebSocket(ORDER_BOOK_WS_URL);
     orderBookWebSocket.addEventListener("open", () => {
       console.log("[BTSE-OrderBook] WebSocket connected");

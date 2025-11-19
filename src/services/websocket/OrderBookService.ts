@@ -4,6 +4,7 @@ import {
   sendOrderBookData,
 } from "@/services/websocket/OrderBookSocket";
 import type { OrderBookData, OrderBookMessage } from "./types/orderBook.types";
+let orderBookSubId = 0;
 
 interface SubscribeOrderBookParams {
   symbol?: string;
@@ -18,6 +19,7 @@ export const subscribeOrderBook = ({
   const topic = `update:${symbol}_${grouping}`;
 
   const observable$ = new Observable<OrderBookData>((subscriber) => {
+    orderBookSubId += 1;
     const orderBookWebSocket = getOrderBookSocket();
     const onCloseHandler = () => {
       subscriber.complete();

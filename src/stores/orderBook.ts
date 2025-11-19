@@ -12,6 +12,7 @@ import { subscribeOrderBook } from "@/services/websocket/OrderBookService";
 import { VISIBLE_MAX_QUOTE } from "@/common/const";
 import { useBigNumber } from "@/hook/useBigNumber";
 const { sumArray } = useBigNumber();
+let orderBookSubId = 0;
 
 export interface OrderBookState {
   sortedBidQuotes: OrderBookQuote[];
