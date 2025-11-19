@@ -45,11 +45,11 @@ export const useTradeHistoryStore = defineStore("tradeHistory", {
       ) {
         return PRICE_DIRECTION.SAME;
       }
-
+      // 新的價格 > 舊的價格
       if (newestTradeHistory.price > lastTradeHistory.price) {
         return PRICE_DIRECTION.INCREASE;
       }
-
+      // 新的價格 < 舊的價格
       return PRICE_DIRECTION.DECREASE;
     },
     unsubscribeTradeHistory() {

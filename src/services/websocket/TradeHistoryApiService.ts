@@ -67,10 +67,12 @@ export const subscribeTradeHistory = ({
 
     // teardown：退訂 + 移除 listener
     return () => {
-      sendTradeHistoryApiData({
-        op: "unsubscribe",
-        args: [topic],
-      });
+      if (webSocket.readyState === WebSocket.OPEN) {
+        sendTradeHistoryApiData({
+          op: "unsubscribe",
+          args: [topic],
+        });
+      }
       webSocket.removeEventListener("message", onMessageHandler);
       webSocket.removeEventListener("close", onCloseHandler);
       console.log(`[TradeHistoryService] unsubscribed from ${topic}`);
