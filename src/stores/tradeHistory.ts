@@ -23,10 +23,11 @@ export const useTradeHistoryStore = defineStore("tradeHistory", {
       this.$patch(payload);
     },
     onSubscribeTradeHistory() {
-      this.consumerCount += 1;
       if (this.tradeHistorySubscription) {
+        this.consumerCount += 1;
         return;
       }
+      this.consumerCount += 1;
       const tradeHistoryObservable = subscribeTradeHistory({
         symbol: "BTCPFC",
       });

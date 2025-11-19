@@ -183,11 +183,14 @@ export const useOrderBookStore = defineStore("orderBook", {
       this.checkCrossedOrderBook();
     },
     onSubscribeOrderBook({ isReconnect }: { isReconnect: boolean }) {
+      if (this.orderBookSubscription) {
+        if (!isReconnect) {
+          this.consumerCount++;
+        }
+        return;
+      }
       if (!isReconnect) {
         this.consumerCount++;
-      }
-      if (this.orderBookSubscription) {
-        return;
       }
       const observable$ = subscribeOrderBook({
         symbol: "BTCPFC",
