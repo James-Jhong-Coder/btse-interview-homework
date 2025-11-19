@@ -1,4 +1,3 @@
-import { useOrderBookStore } from "@/stores/orderBook";
 const ORDER_BOOK_WS_URL = "wss://ws.btse.com/ws/oss/futures";
 let orderBookWebSocket: WebSocket | null = null;
 
@@ -16,8 +15,6 @@ export const getOrderBookSocket = (): WebSocket => {
     });
 
     orderBookWebSocket.addEventListener("close", () => {
-      const orderBookStore = useOrderBookStore();
-      orderBookStore.$reset();
       console.log("[BTSE-OrderBook] WebSocket disconnected");
     });
 

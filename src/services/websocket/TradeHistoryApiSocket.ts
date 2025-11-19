@@ -1,4 +1,3 @@
-import { useTradeHistoryStore } from "@/stores/tradeHistory";
 const HISTORY_API_WS_URL = "wss://ws.btse.com/ws/futures";
 
 let tradeHistoryApiWebSocket: WebSocket | null = null;
