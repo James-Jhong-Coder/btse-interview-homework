@@ -1,4 +1,5 @@
 import BigNumber from "bignumber.js";
+import { compact } from "lodash";
 export const useBigNumber = () => {
   const formatWithComma = (value = 0) => {
     const _bigNumber = new BigNumber(value);
@@ -8,12 +9,7 @@ export const useBigNumber = () => {
     if (!Array.isArray(values)) {
       return 0;
     }
-    const filteredValues = values.filter((item) => {
-      if (item === null || item === undefined || item === "") {
-        return false;
-      }
-      return true;
-    });
+    const filteredValues = compact(values);
     if (filteredValues.length === 0) {
       return 0;
     }
