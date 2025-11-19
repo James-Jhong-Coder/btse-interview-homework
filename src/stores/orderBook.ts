@@ -17,7 +17,6 @@ export interface OrderBookState {
   sortedBidQuotes: OrderBookQuote[];
   sortedAskQuotes: OrderBookQuote[];
 
-  // snapshot / delta 用到的 meta
   lastSeqNum: number | null;
 
   orderBookSubscription: Subscription | null;
