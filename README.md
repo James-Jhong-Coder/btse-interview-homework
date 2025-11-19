@@ -1,5 +1,24 @@
-# Vue 3 + TypeScript + Vite
+# BTSE Homework
+---
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## 開發環境需求
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+請先安裝以下工具：
+- node.js 20+
+- pnpm
+---
+
+## 📦 安裝專案
+
+```bash
+git clone [<your-repo-url>](https://github.com/James-Jhong-Coder/btse-interview-homework.git)
+cd btse-homework
+pnpm install
+```
+---
+
+## 啟動開發環境
+
+```bash
+pnpm dev
+```
