@@ -4,7 +4,6 @@ import {
   sendOrderBookData,
 } from "@/services/websocket/OrderBookSocket";
 import type { OrderBookData, OrderBookMessage } from "./types/orderBook.types";
-import { useOrderBookStore } from "@/stores/orderBook";
 
 interface SubscribeOrderBookParams {
   symbol?: string;
@@ -20,6 +19,9 @@ export const subscribeOrderBook = ({
 
   const observable$ = new Observable<OrderBookData>((subscriber) => {
     const orderBookWebSocket = getOrderBookSocket();
+    const onCloseHandler = () => {
+      subscriber.complete();
+    };
 
     const onMessageHandler = (event: MessageEvent) => {
       try {
@@ -34,16 +36,18 @@ export const subscribeOrderBook = ({
     };
 
     orderBookWebSocket.addEventListener("message", onMessageHandler);
+    orderBookWebSocket.addEventListener("close", onCloseHandler);
 
     // 退訂，移除
     return () => {
-      const orderBookStore = useOrderBookStore();
-      orderBookStore.$reset();
-      sendOrderBookData({
-        op: "unsubscribe",
-        args: [topic],
-      });
+      if (orderBookWebSocket.readyState === WebSocket.OPEN) {
+        sendOrderBookData({
+          op: "unsubscribe",
+          args: [topic],
+        });
+      }
       orderBookWebSocket.removeEventListener("message", onMessageHandler);
+      orderBookWebSocket.removeEventListener("close", onCloseHandler);
       console.log(`[OrderBookService] unsubscribed from ${topic}`);
     };
   });
