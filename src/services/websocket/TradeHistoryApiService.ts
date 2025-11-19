@@ -36,16 +36,12 @@ export const subscribeTradeHistory = ({
           return;
         }
 
-        // 如果訂閱沒有成功，就不往下執行
         if (!isSubscribed) return;
-        // 只處理 tradeHistoryApi 的消息
         if (msg.topic !== "tradeHistoryApi" || !Array.isArray(msg.data)) return;
 
         const data = msg.data as TradeHistoryMessage["data"];
-        // 因為只拿第一筆作顯示
         const first = data[0];
 
-        // 確認 symbol 一致，避免混到其他商品
         if (!first || first.symbol !== symbol) return;
 
         subscriber.next(first);
@@ -59,7 +55,6 @@ export const subscribeTradeHistory = ({
 
     webSocket.addEventListener("message", onMessageHandler);
     webSocket.addEventListener("close", onCloseHandler);
-    // 送出訂閱指令
     sendTradeHistoryApiData({
       op: "subscribe",
       args: [topic],
